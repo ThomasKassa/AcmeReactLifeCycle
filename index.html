@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js'></script>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    </head>
+
+    <body>
+        <div id=root></div>
+        <script>
+            
+            const { Component } = React;
+            const { render } = ReactDOM;
+            const view = window.location.hash.slice(1);
+
+            const prodsList =(props)=> {
+                console.log(props)
+                const lis = props.products.map((product,idx)=>{
+                    return React.createElement('li',{key:idx},`${product.name} - ${product.description}`)
+                })
+
+                return React.createElement('ul',null,lis);
+            }
+
+            // const prodsLink=()=>{
+            //     return React.createElement('a',{href:'#products'},'Products')
+            // }
+
+            const compsList =(props)=> {
+                console.log(props)
+                const lis = props.companies.map((company,idx)=>{
+                    return React.createElement('li',{key:idx},company.name)
+                })
+
+                return React.createElement('ul',null,lis);
+            }
+
+            // const compsLink=()=>{
+            //     return React.createElement('a',{href:'#companies'},'Companies')
+            // }
+
+
+
+            // const Nav =(compsLink,prodsLink)=>{
+            //     return React.createElement('button',{ onClick: ()=> { companies, products, view}})
+                
+            // }
+
+            const Nav = (,,view) => {
+                const comps = React.createElement('a', {href: '#companies'}, 'Companies');
+                const prods = React.createElement('a', {href: '#products'}, 'Products');
+
+                return React.createElement('div',null,comps, prods);                
+            }
+
+            class App extends Component{
+                constructor(){
+                    super();
+
+                    this.state = {
+                        products: [],
+                        companies: []
+                    }
+
+                }
+
+                componentDidMount(){
+                    const prods = fetch('https://acme-users-api-rev.herokuapp.com/api/products')
+                        .then(res=> res.json())
+            
+
+                    const comps = fetch('https://acme-users-api-rev.herokuapp.com/api/companies')
+                        .then(res=> res.json())
+
+                    const data = Promise.all([prods,comps])
+                      
+                        .then(data=> {
+                            this.setState({products:data[0],companies: data[1]})
+                        });
+                }
+
+                render(){
+                    const { products, companies, view } = this.state;
+                    const nav = React.createElement(Nav, { companies, products, view});
+                    let chosenView;
+                    if(view === 'companies'){
+                        chosenView = React.createElement(compsList, {companies})
+                    }
+                    if(view === 'products'){
+                        chosenView = React.createElement(prodsList, {products})
+                    }
+                    return React.createElement('div',null,nav,chosenView);
+                    // const pList = React.createElement(prodsList,{products},);
+                    // const cList = React.createElement(compsList,{companies},);
+                     
+                }
+            }
+            const root = document.querySelector('#root');
+            render(React.createElement(App), root);
+        </script>
+    </body>
+
+
+</html>
